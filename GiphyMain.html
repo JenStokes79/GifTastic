@@ -22,7 +22,7 @@
       </form>
       
       <!-- gifs will go here-->
-      <div id="gifView"></div>
+      <div class="gifView"></div>
 	
       <!--end of page html-->
 </div>
@@ -69,16 +69,22 @@
             var animalDiv = $("<div>"); // creates a empty div for the below elements 
             var r = $("<p>").text("Rating: " + results[j].rating); // creates a <P> tag for the rating of the gif
             var animalsImg = $("<img>"); // creates an image
-            animalsImg.attr("src", results[j].images.fixed_height.url); // adding the src attribute from the results for loop
+
+            // adding all the attributes needed to be able to pause/start gifs
+
+            animalsImg.attr("src", results[j].images.fixed_height_still.url); 
+            animalsImg.attr("data-still", results[j].images.fixed_height_still.url);
+            animalsImg.attr("data-animate", results[j].images.fixed_height.url);
+            animalsImg.attr("data-state", "still");
+           animalsImg.addClass("gif");
             animalDiv.append(r); // appends the rating to the empty div
             animalDiv.append(animalsImg); // appends the images to the empty div
 
-            $("#gifView").append(animalDiv); //appends everything stored in the animalDiv to the gifView div in html
-
-        }
-
-        })
-       } 
+            $(".gifView").append(animalDiv); //appends everything stored in the animalDiv to the gifView div in html
+        } // end of for loop
+      }) // end of response function
+        $(".gifView").empty(); // clears the current gifs when new button is clicked
+    } // end of displayAnimals function
 
        // this function triggers when the user clicks the add a gif button
     $(".add-animals").on("click", function(event) {
@@ -87,18 +93,33 @@
       var animal = $("#userInput").val().trim(); // this is the users input
       firstAnimals.push(animal); // this pushes the users input to the firstAnimals array
       renderButtons(); // process the animals array buttons
-    });
-
-    $(document).on("click", ".animalz", displayAnimals); // this adds an event listener to all elements with the animalz class
- 
-    renderButtons(); // calls the initial animal arrays buttons
+    }); // ends click event
 
 
 
+// this adds an event listener to all elements with the animalz class
+  $(document).on("click", ".animalz", displayAnimals); 
+  
+// calls the initial animal arrays buttons
+  renderButtons(); 
 
-        
 
-      
+// condition for when gif is clicked, to either puase or restart animation
+  $(".gifView").on("click", ".gif", function(event) {
+
+      var state = $(this).attr("data-state");
+
+    if (state === "still"){
+       $(this).attr("src", $(this).attr("data-animate"));
+          $(this).attr("data-state", "animate");
+   } else {
+       $(this).attr("src", $(this).attr("data-still"));
+          $(this).attr("data-state", "still");
+          } // ends else statement
+
+
+    }) // ends data-state condition
+     
 </script>
 </body>
 </html>
