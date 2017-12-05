@@ -7,37 +7,98 @@
 
 <body>
 <div class="container">
-	<h1>Pick a Gif!</h1>
+	<h1>Animalz!!!</h1>
 
-      <form id="giphyForm">
-      <label for="giphy-input">Add a Gif</label>
-      <input type="text" id="giphy-input-input"><br>
+      <!--pre-placed gif buttons, and new buttons will go here-->
+      <div id="buttons"></div>
+
+    <!--where user will input new animals-->
+      <form id="gifForm">
+      <label for="animal-input">Add an Animal</label>
+      <input type="text" id="userInput"><br>
 
       <!-- Button triggers new gifs to be added -->
-      <input id="add-gif" type="submit" value="Add a Gif">
-    </form>
+      <input class="add-animals" type="submit" value="Add a Gif">
+      </form>
+      
+      <!-- gifs will go here-->
+      <div id="gifView"></div>
 	
+      <!--end of page html-->
 </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+    <!-- javascript & jQuery from here on down-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script type="text/javascript">
-	
+
+        // array of first set of animals
+        var firstAnimals = ["dog", "otter", "goat", "hippo", "koala", "unicorn", "penguin"];
+
+        //this function will dynamically create buttons for the array above
+        function renderButtons () { 
+         
+         $("#buttons").empty(); // no duplicate buttons
+
+         for (var i = 0; i < firstAnimals.length; i++) {
+          var b = $("<button>"); // jQuery button tool
+          b.addClass("animalz"); // adds the class animalz to all elements that I assign it to
+          b.attr("data-animals", firstAnimals[i]); // adds a data attribute to the array of animals
+          b.text(firstAnimals[i]); // adds matching text & animal to the created buttons
+          $("#buttons").append(b); // appends buttons to button div in html
+
+         } //ends for loop
+
+        } //ends renderButton function
+
+
+        // this function uses the ajax to get animals chosen by user
+      function displayAnimals () {
+        var animal = $(this).attr("data-animals"); 
+        var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + animal + "&api_key=dc6zaTOxFJmzC&limit=10" 
+
+        $.ajax({
+          url: queryURL,
+          method: "GET"
+        }).done(function(response){
+          console.log(response) //is working
+
+          var results = response.data
+
+          // this for loop stores the results from the ajax call
+          for (var j = 0; j < results.length; j++){
+            var animalDiv = $("<div>"); // creates a empty div for the below elements 
+            var r = $("<p>").text("Rating: " + results[j].rating); // creates a <P> tag for the rating of the gif
+            var animalsImg = $("<img>"); // creates an image
+            animalsImg.attr("src", results[j].images.fixed_height.url); // adding the src attribute from the results for loop
+            animalDiv.append(r); // appends the rating to the empty div
+            animalDiv.append(animalsImg); // appends the images to the empty div
+
+            $("#gifView").append(animalDiv); //appends everything stored in the animalDiv to the gifView div in html
+
+        }
+
+        })
+       } 
+
+       // this function triggers when the user clicks the add a gif button
+    $(".add-animals").on("click", function(event) {
+      event.preventDefault(); // 
+
+      var animal = $("#userInput").val().trim(); // this is the users input
+      firstAnimals.push(animal); // this pushes the users input to the firstAnimals array
+      renderButtons(); // process the animals array buttons
+    });
+
+    $(document).on("click", ".animalz", displayAnimals); // this adds an event listener to all elements with the animalz class
+ 
+    renderButtons(); // calls the initial animal arrays buttons
 
 
 
+
+        
+
+      
 </script>
 </body>
 </html>
